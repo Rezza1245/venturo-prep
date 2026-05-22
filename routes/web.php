@@ -19,6 +19,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/tasks', [TaskController::class, 'index']);
     Route::get('/tasks/create', [TaskController::class, 'create']);
     Route::post('/tasks', [TaskController::class, 'store']);
+    Route::delete('/tasks/{task}', [TaskController::class, 'destroy']);
 });
 
 require __DIR__.'/auth.php';
