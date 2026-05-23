@@ -56,6 +56,10 @@ class TaskController extends Controller
      */
     public function edit(Task $task)
     {
+        if($task->user_id !== auth()->id()){
+            abort(403);
+        }
+        return view('tasks.edit', compact('task'));
         //
     }
 
@@ -64,6 +68,16 @@ class TaskController extends Controller
      */
     public function update(Request $request, Task $task)
     {
+        if ($task->user_id !== auth()->id()){
+            abort(403);
+        }
+        $request->validate([
+            'title'=>'required|min:3'
+        ]) ;
+        $task->update([
+            'title' => $request->title
+        ]);
+        return redirect('/tasks');
         //
     }
 
@@ -79,5 +93,16 @@ class TaskController extends Controller
         
         return redirect('/tasks');
         //
+    }
+
+    public function toggle(Task $task)
+    {
+        if ($task->user_id !== auth()->id()){
+            abort(403);
+        }
+        $task->update([
+            'is_completed' => !$task->is_completed
+        ]);
+        return redirect('/tasks');
     }
 }
