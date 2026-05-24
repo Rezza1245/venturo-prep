@@ -1,8 +1,19 @@
+@extends('layouts.app')
+@section('content')
+
 <h1>Create Task</h1>
+
 <form action="/tasks" method="POST">
     @csrf
-    <input type="text" name="title" placeholder="Task title">
+    <input 
+        type="text",
+        name="title",
+        placeholder="Task title"
+    >
+
     <button type="submit">
         Save
     </button>
+    
 </form>
+@endsection

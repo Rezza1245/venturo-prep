@@ -10,9 +10,23 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $tasks = Task::where('user_id', auth()->id())->get();
+        $query = Task::where('user_id', auth()->id());
+        if ($request->search){
+            $query->where(
+                'title',
+                'like',
+                '%'. $request->search . '%'
+            );
+        }
+
+        if($request->status == 'completed'){
+            $querry->where('is_completed', true);
+        }
+
+        $tasks = $query->latest()->get();
+        
         return view('tasks.index', compact('tasks'));
         //
     }

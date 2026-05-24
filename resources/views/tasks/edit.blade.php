@@ -1,5 +1,9 @@
+@extends('layouts.app')
+@section('content')
+
 <h1>Edit Task</h1>
-<form action="/tasks/{{$task->id}}" method="POST">
+
+<form action="/tasks/{{ $task->id }}" method="post">
     @csrf
     @method('PUT')
     <input 
@@ -7,8 +11,9 @@
         name="title",
         value="{{ $task->title }}"
     >
-
     <button type="submit">
         Update
     </button>
 </form>
+
+@endsection
