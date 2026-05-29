@@ -1,5 +1,9 @@
 @extends('layouts.app')
-
+@if(session('success'))
+    <div style="padding:10px;background:#d1fae5;margin-bottom:10px;">
+        {{ session('success') }}
+    </div>
+@endif
 @section('content')
 
     <h1>Todo List</h1>
@@ -51,7 +55,7 @@
                 Edit
             </a>
 
-            <form action="/tasks/{{ $task->title }}/toggle" method="POST">
+            <form action="/tasks/{{ $task->id }}/toggle" method="POST">
                 @csrf
                 @method('PATCH')
 
@@ -73,5 +77,6 @@
             </form>
         </div>
     @endforeach
+    {{ $tasks->links() }}
 
 @endsection

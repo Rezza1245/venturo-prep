@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use App\Http\Requests\TaskRequest;
+use App\Services\TaskService;
 
 class TaskController extends Controller
 {
@@ -13,20 +14,20 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Task::where('user_id', auth()->id());
+        $query = Task::ownedBy(auth()->id());
         if ($request->search){
-            $query->where(
-                'title',
-                'like',
-                '%'. $request->search . '%'
-            );
+            $query->search($request->search);
         }
 
         if($request->status == 'completed'){
-            $querry->where('is_completed', true);
+            $querry->completed();
         }
 
-        $tasks = $query->latest()->get();
+        if($request->status == 'pending'){
+            $querry->pending();
+        }
+
+        $tasks = $query->latest()->paginate(5);
         
         return view('tasks.index', compact('tasks'));
         //
@@ -54,7 +55,7 @@ class TaskController extends Controller
             'user_id' => auth()->id(),
             'is_complited' => false
         ]);
-        return redirect('/tasks');
+        return redirect('/tasks')->with('success', 'Task Berhasil Dibuat');
         //
     }
 
@@ -92,7 +93,7 @@ class TaskController extends Controller
         $task->update([
             'title' => $request->title
         ]);
-        return redirect('/tasks');
+        return redirect('/tasks')->with('success', 'Task Berhasil Diupdate');
         //
     }
 
@@ -105,8 +106,8 @@ class TaskController extends Controller
             abort(403);
         }
         $task->delete();
-        
-        return redirect('/tasks');
+
+        return redirect('/tasks')->with('success', 'Task Berhasil Dihapus');
         //
     }
 
@@ -115,9 +116,9 @@ class TaskController extends Controller
         if ($task->user_id !== auth()->id()){
             abort(403);
         }
-        $task->update([
-            'is_completed' => !$task->is_completed
-        ]);
-        return redirect('/tasks');
+        $service = new TaskService();
+        $service->toggle($task);
+
+        return redirect('/tasks')->with('success', 'Task Berhasil Diupdate');
     }
 }
