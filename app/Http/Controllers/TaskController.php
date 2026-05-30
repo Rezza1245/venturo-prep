@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\TaskRequest;
 use App\Services\TaskService;
+
 
 class TaskController extends Controller
 {
@@ -15,20 +17,20 @@ class TaskController extends Controller
     public function index(Request $request)
     {
         $query = Task::ownedBy(auth()->id());
-        if ($request->search){
+        if ($request->search) {
             $query->search($request->search);
         }
 
-        if($request->status == 'completed'){
-            $querry->completed();
+        if ($request->status == 'completed') {
+            $query->completed();
         }
 
-        if($request->status == 'pending'){
-            $querry->pending();
+        if ($request->status == 'pending') {
+            $query->pending();
         }
 
-        $tasks = $query->latest()->paginate(5);
-        
+        $tasks = $query->with('user')->latest()->paginate(5);
+
         return view('tasks.index', compact('tasks'));
         //
     }
@@ -47,13 +49,10 @@ class TaskController extends Controller
      */
     public function store(TaskRequest $request)
     {
-        $request->validate([
-            'title'=>'required|min:3'
-        ]);
         Task::create([
-            'title' => $request->title,
+            ...$data,
             'user_id' => auth()->id(),
-            'is_complited' => false
+            'is_completed' => false
         ]);
         return redirect('/tasks')->with('success', 'Task Berhasil Dibuat');
         //
@@ -72,9 +71,8 @@ class TaskController extends Controller
      */
     public function edit(Task $task)
     {
-        if($task->user_id !== auth()->id()){
-            abort(403);
-        }
+        Gate::authorize('update', $task);
+
         return view('tasks.edit', compact('task'));
         //
     }
@@ -84,12 +82,8 @@ class TaskController extends Controller
      */
     public function update(TaskRequest $request, Task $task)
     {
-        if ($task->user_id !== auth()->id()){
-            abort(403);
-        }
-        $request->validate([
-            'title'=>'required|min:3'
-        ]) ;
+        Gate::authorize('update', $task);
+
         $task->update([
             'title' => $request->title
         ]);
@@ -102,9 +96,8 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
-        if ($task->user_id !== auth()->id()){
-            abort(403);
-        }
+        Gate::authorize('delete', $task);
+
         $task->delete();
 
         return redirect('/tasks')->with('success', 'Task Berhasil Dihapus');
@@ -113,9 +106,9 @@ class TaskController extends Controller
 
     public function toggle(Task $task)
     {
-        if ($task->user_id !== auth()->id()){
-            abort(403);
-        }
+
+        Gate::authorize('toggle', $task);
+
         $service = new TaskService();
         $service->toggle($task);
 

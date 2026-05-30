@@ -1,12 +1,12 @@
 <?php
-
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\TaskApiController;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
+Route::get('/test', function(){
+    return response()->json([
+        'message'=>'API Works'
+    ]);
 });
 
-Route::get('/tasks', function(){
-    return 'hello api';
-});
+Route::get('/tasks', [TaskApiController::class, 'index']);
+Route::get('/tasks/{task}', [TaskApiController::class, 'show']);

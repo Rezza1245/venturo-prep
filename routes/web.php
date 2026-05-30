@@ -16,9 +16,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::get('/tasks', [TaskController::class, 'index']);
     Route::resource('tasks', TaskController::class);
     Route::patch('/tasks/{task}/toggle', [TaskController::class, 'toggle']);
-}); 
+});
+Route::get('/test-user', function(){
+        $user = App\Models\User::find(1);
+        dd($user->tasks);
+    }); 
 
 require __DIR__.'/auth.php';

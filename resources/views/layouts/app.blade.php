@@ -16,15 +16,17 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans antialiased">
-    <nav>
-        <a href="/tasks">
-            Todo List
-        </a>
+<body class="font-sans antialiased bg-gray-100">
+    <nav class="bg-white shadow">
+        <div class="max-w-4x1 mx-auto px-6 py-4">
+            <a href="/tasks" class="text-xl font-bold text-gray-800">
+                Todo App Zaraaa
+            </a>
+        </div>
     </nav>
-
-    <hr>
-    @yield('content')
+    <main class="max-w-4x1 mx-auto px-6 py-6">
+        @yield('content')
+    </main>
 </body>
 
 </html>
